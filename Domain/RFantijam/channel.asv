@@ -13,13 +13,6 @@ classdef channel < handle
     end
     
     methods
-        function obj = channel()
-            
-        end
-        
-        function GainVariate()
-            
-        end
     end
     
 end

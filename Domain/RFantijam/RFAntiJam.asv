@@ -26,11 +26,11 @@ classdef RFAntiJam < handle
         end
         
         function OperateRound()
-        % relative to state, SU action, Attack Action
+        % relative to state, SU action, AttackAction
         end
         
         function reward = GetReward()
-        % relative to state, SU action, Attack Action
+        % relative to 
             
         end
         

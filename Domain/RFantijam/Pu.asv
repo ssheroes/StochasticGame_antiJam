@@ -9,9 +9,7 @@ classdef Pu < handle
         function obj = Pu()
         end
         
-        function PUchannel = channelPU()
-           % channels occupied by PU 
-        end
+        function PUchannel = channel
     end
     
 end
