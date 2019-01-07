@@ -2,11 +2,12 @@ classdef Pu < handle
     %PU primary user
     
     properties
-        PUnum
+        PUnum;
     end
     
     methods
         function obj = Pu()
+            
         end
         
         function PUchannel = channelPU()

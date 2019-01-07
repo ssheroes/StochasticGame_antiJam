@@ -4,15 +4,23 @@ classdef Attacker < handle
     
     properties
         AttackNum;    %干扰者个数
-        
+        Player;
+        action;
+        JammedChannels
     end
     
+    
     methods
-        function obj = Jammer(Num)
-            obj.Num = Num;
+        function obj = Attacker(Player,AttackNum)
+            obj.AttackNum = AttackNum;
+            obj.Player = Player;
         end
         
-        function JamChannel = Attack(ChannelTotal)
+        function JamChannel = Attack(obj)
+          
+        end
+        
+        function action = get.action(obj)
             action
         end
     end

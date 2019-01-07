@@ -2,6 +2,7 @@ classdef channel < handle
     %channel ĞÅµÀÀà
     
     properties
+        BandNum;
         channelnumPerband;
         %at the time slot t, control(data) channels and the part of being
         %jammed
@@ -13,6 +14,13 @@ classdef channel < handle
     end
     
     methods
+        function obj = channel(BandNum,channelnumPerband)
+            obj
+        end
+        
+        function GainVariate()
+            
+        end
     end
     
 end

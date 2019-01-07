@@ -11,19 +11,22 @@ classdef Com < handle
         %end of time slot t
         ControlChannels_2; %control channels chosen from jammed channels at the
         %end of time slot t
+        Player;   %the player policy
+    end
+    properties(Dependent)
+        action ;   %the action
     end
     
     methods
-        function obj = Com()
-            
+        function obj = Com(Player)   %constructor
+            obj.Player = Player;
         end
         
-        function action = 
-            
+        function action = get.action(obj)   %Output the action
+            ac
         end
         
-        
-        
+    
     end
     
 end
