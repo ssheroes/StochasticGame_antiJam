@@ -6,13 +6,12 @@ classdef channel < handle
         channelNum;
         %at the time slot t, control(data) channels and the part of being
         %jammed
-        controlChannels;
-        dataChannels;
-        JammedChannelsControl;    
-        JammedChannelsData;
-        seq_Jammed;
+        seq_Control_Jammed;
+        seq_Data_Jammed;
+        n_Jammed_C;
+        n_Jammed_D;
         seq_unJammed;
-        seq_whole;
+        seq_Jammed;
         Gain;
     end
     

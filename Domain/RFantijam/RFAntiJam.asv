@@ -23,16 +23,24 @@ classdef RFAntiJam < handle
         % relative to PUchannel,channelGain,controlJammed,DataJammed     
         end
         
-        function OperateRound(obj)
+        function wins = train(obj,Train)
+           step = 0;
+           obj.restart(); 
+           while step <= 
+            
+        end
+        
+        
+        function playRound(obj)
         % relative to state, SU action, Attack Action
             SenseResult = obj.Sense();  % sense
-            Su_action = obj.Su.GetAction(SenseResult,obj.state);
+            Su_action = obj.Su.GetAction(obj.state);
             n_Data_1 = Su_action(1);
             n_Data_2 = Su_action(2);
             n_Control_1 = Su_action(3);
             n_Control_2 = Su_action(4);
             
-            Attack_action = obj.Attacker.GetAction(SenseResult)
+            Attack_action = obj.Attacker.GetAction(obj.state)
             n_Attack_1 = Attack_action(1);
             n_Attack_2 = Attack_action(2);
             n_unJammed = obj.Channel.channelNum-(obj.state(3)+obj.state(4));
