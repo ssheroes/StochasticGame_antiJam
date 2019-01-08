@@ -3,14 +3,6 @@ classdef Com < handle
     
     properties
         SUnum;
-        n_Data_1; % data channels chosen from unjammed channels at the end of 
-        % time slot t
-        n_Data_2;% data channels chosen from jammed channels at the end of
-        % time slot t 
-        n_Control_1; %control channels chosen from unjammed channels at the
-        %end of time slot t
-        n_Control_2; %control channels chosen from jammed channels at the
-        %end of time slot t
         Player;   %the player policy
         action;
     end
@@ -21,7 +13,7 @@ classdef Com < handle
             obj.Player = Player;
         end
         
-        function action = GetAction(obj,state)   %Output the action
+        function action =chooseAction(obj,state)   %Output the action
             action = zeros(1,4);
             bandState = state(1);
             channelGain = state(2);
