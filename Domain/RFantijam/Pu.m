@@ -3,6 +3,7 @@ classdef Pu < handle
     
     properties
         PUnum;
+        bandState;
     end
     
     methods

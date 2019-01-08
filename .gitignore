@@ -1,2 +1,9 @@
 
 Stochastic_antiJam/
+Domain/**/*.asv
+
+Stochastic_antiJam/**/*.asv
+
+Stochastic_antiJam/*.asv
+
+Stochastic_antiJam/Domain/**/*.asv

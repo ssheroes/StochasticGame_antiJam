@@ -21,9 +21,8 @@ classdef Com < handle
             obj.Player = Player;
         end
         
-        function action = get.action(obj)   %Output the action
-            action = [obj.n_DataChannels_1,obj.n_DataChannels_2,obj.n_ControlChannels_1...
-                ,obj.n_ControlChannels_2];
+        function action = GetAction(obj,state)   %Output the action
+            
         end
         
     

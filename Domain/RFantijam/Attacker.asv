@@ -6,7 +6,8 @@ classdef Attacker < handle
         AttackNum;    %干扰者个数
         Player;
         action;
-        JammedChannels
+        n_AttackChannels_1;   % the attakced channels from unjammed channels
+        n_AttackChannels_2;   %the attacked channels from jammed channels
     end
     
     
@@ -16,12 +17,12 @@ classdef Attacker < handle
             obj.Player = Player;
         end
         
-        function JamChannel = Attack(obj)
+        function action =GetAction(Sen,obj)
           
         end
         
         function action = get.action(obj)
-            action
+            action = [obj.n_AttackChannels_1,obj.n_AttackChannels_2];
         end
     end
     

@@ -17,7 +17,7 @@ classdef Attacker < handle
             obj.Player = Player;
         end
         
-        function JamChannel = Attack(obj)
+        function action =GetAction(SenseResult,obj)
           
         end
         
