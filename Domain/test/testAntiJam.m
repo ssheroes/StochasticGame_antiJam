@@ -14,3 +14,5 @@ AntiJam.playRound( actionA,actionB );
 actionA = [3,1,1,1];
 actionB = [2,2];
 AntiJam.playRound( actionA,actionB );
+Com = Com();
+ActionSet = Com.findAvaliableAction([0,1,1,1],channelNum);
