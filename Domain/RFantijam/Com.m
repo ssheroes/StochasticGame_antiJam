@@ -15,12 +15,15 @@ classdef Com < handle
 
     
     methods
-        function obj = Com()   %constructor
-            
+        function ActionSet = findAvaliableAction(state)   %constructor
+            n_Jammed_C = obj.Channel.n_Jammed_C;
+            n_Jammed_D = obj.Channel.n_Jammed_D;
             
         end
         
         function Initial(obj)
+            % specialize the actions for each state
+            
             
         end
             
