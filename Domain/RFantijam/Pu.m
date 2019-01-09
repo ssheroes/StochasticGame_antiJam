@@ -13,6 +13,7 @@ classdef Pu < handle
         function obj = Pu()
             obj.ProbTran = [0.5,0.5];
             obj.PuStateSet = [0,1];
+            obj.PuState = 0;
         end
         
         function Init(obj)

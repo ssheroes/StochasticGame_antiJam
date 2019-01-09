@@ -24,6 +24,7 @@ classdef channel < handle
             obj.channelNum = channelNum;
             obj.GainSet = {1,6,11};
             obj.ProbTran = [0.4,0.4,0.2];
+            obj.Init();
         end
         
         function Init(obj)
@@ -32,8 +33,9 @@ classdef channel < handle
             obj.seq_Control_Jammed = [];
             obj.seq_Data_Jammed = [];
             obj.seq_Jammed = [];
-            obj.seq_unJammed = [1:obj.channelNum];
-            obj.Gain = randsrc(1,1,obj.GainSet);
+            obj.seq_unJammed = 1:obj.channelNum;
+            obj.GainIndex = randsrc(1,1,1:length(obj.GainSet));
+            obj.Gain = obj.GainSet(obj.GainIndex);
         end
         
         function GainVariate(obj,PuState)

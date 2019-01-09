@@ -17,8 +17,16 @@ classdef Attacker < handle
             obj.Player = Player;
         end
         
-        function action =GetAction(SenseResult,obj)
-          
+        function action =chooseAction(obj,state)
+            PuState = state.value(1);
+            if(PuState==1)   %if the Pu is active
+                action=zeros(1,numActionsB);
+                return;
+            else
+                action = obj.Player.chooseAction(state.Index);               
+            end  
+            obj.n_AttackChannels_1 = action(1);
+            obj.n_AttackChannels_2 = action(2);
         end
         
         function action = get.action(obj)

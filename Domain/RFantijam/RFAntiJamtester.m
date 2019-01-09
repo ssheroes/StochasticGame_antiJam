@@ -4,28 +4,23 @@ classdef RFAntiJamtester < handle
     
     properties
         Channel;
-        Pu;
-        BandNum=1;
-        TrainStepsCnt;
-        
+        Pu;      
     end
        
     methods
-        function obj = RFAntiJam(Channel,Su,Attacker,Pu)
+        function obj = RFAntiJamtester(Channel,Pu)
             obj.Channel = Channel;
-            obj.Su = Su;
-            obj.Attacker = Attacker;
             obj.Pu = Pu;
         end
         
         function state = boardToState( obj,MaxJam )
-            PUoccupied = obj.Pu.PuState;
+            PuState = obj.Pu.PuState;
             GainIndex = obj.Channel.GainIndex;
             n_Jammed_C = obj.Channel.n_Jammed_C;
             n_Jammed_D = obj.Channel.n_Jammed_D;
-            state.value = [PUoccupied,Channelgain,n_Jammed_C,n_Jammed_D];
+            state.value = [PuState,Channelgain,n_Jammed_C,n_Jammed_D];
              % weight1 is the index of the combination [PUoccupied,GainIndex]
-            if PUoccupied
+            if PuState
                   weight1 = 0; %  [1,0]
             else
                   weight1 = GainIndex; % [0,1] [0,2] [0,3]
@@ -47,7 +42,7 @@ classdef RFAntiJamtester < handle
                state = obj.boardToState();
                actionA = Com.chooseAction( obj.state );
                actionB = Attacker.chooseAction( obj.state );
-               result = obj.playround( actionA,actionB );
+               obj.playRound( actionA,actionB );
                reward = obj.resultToReward( result );
                newstate = obj.boradToState();
                Com.UpdatePolicy( state,newstate,[actionA,actionB],reward );
@@ -57,7 +52,8 @@ classdef RFAntiJamtester < handle
         end
         
         function restart(obj)
-            obj.Channel.Init();            
+            obj.Channel.Init();   
+            obj.Pu.Init();
         end
         
         function playRound( obj,actionA,actionB )
@@ -106,7 +102,7 @@ classdef RFAntiJamtester < handle
         end
         
         
-        function reward = GetReward()
+        function reward = GetReward(obj)
         % relative to state, SU action, Attack Action
             
         end
