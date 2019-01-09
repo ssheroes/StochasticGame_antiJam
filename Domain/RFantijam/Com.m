@@ -9,18 +9,25 @@ classdef Com < handle
         n_Control_1;
         n_Data_2;
         n_Control_2;
+        numAction = 4;
+        
     end
 
     
     methods
-        function obj = Com(Player)   %constructor
-            obj.Player = Player;
+        function obj = Com()   %constructor
+            
+            
         end
         
+        function Initial(obj)
+            
+        end
+            
         function action =chooseAction(obj,state)   %Output the action
             PuState = state.value(1);
             if(PuState==1)   %if the Pu is active
-                action=zeros(1,numActionsA);
+                action=zeros(1,obj.numAction);
                 return;
             else
                 action = obj.Player.chooseAction(state.Index);
@@ -30,6 +37,7 @@ classdef Com < handle
             obj.n_Data_2 = action(3);
             obj.n_Control_2 = action(4);
         end
+        
         
     
     end
