@@ -3,7 +3,6 @@ classdef Pu < handle
     
     properties
         PUnum;
-        bandState;
         PuState;
         ProbTran;   %P{1->0}=P{1->1}=P{0->0}=P{0->1}=0.5
         PuStateSet;
@@ -20,13 +19,14 @@ classdef Pu < handle
             obj.PuState = 0;
         end
         
-        function StateVariate(obj)
+        function PuStateOut = StateVariate(obj)
             RandChoice = rand;
             choice = 1;
             while RandChoice>sum(obj.ProbTran(1:choice))
                 choice = choice + 1;
             end
             obj.PuState = obj.PuStateSet(choice);
+            PuStateOut = obj.PuState;
         end
         
     end
