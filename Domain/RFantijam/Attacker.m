@@ -21,16 +21,22 @@ classdef Attacker < handle
             ActionSet = [];
             n_Jammed_C = state(3);
             n_Jammed_D = state(4);
+            PuState = state(1);
             n_Jammed = n_Jammed_C+n_Jammed_D;
             n_unJammed = ChannelNum-n_Jammed;
+            if PuState ==1
+                ActionSet.action = [0,0];
+                ActionSet.Index = obj.actionToIndex(ActionSet.action,obj.AttackNum);                
+            else
             for n_attack_1 = 0:min(n_unJammed,obj.AttackNum)
                 for n_attack_2 = 0:min(n_Jammed,obj.AttackNum-n_attack_1)
                     actionItem = [ n_attack_1,n_attack_2 ];
-                    actionIndex = obj.actionToIndex(actionItem,AttackNum);
+                    actionIndex = obj.actionToIndex(actionItem,obj.AttackNum);
                     actionStruct.action = actionItem;
                     actionStruct.Index = actionIndex;
                     ActionSet = [ActionSet,actionStruct];
                 end
+            end
             end
             
         end 

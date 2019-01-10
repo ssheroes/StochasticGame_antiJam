@@ -5,13 +5,16 @@ classdef RFAntiJamtester < handle
     properties
         Channel;
         Pu;      
+        StateOccurSet;
     end
        
     methods
         function obj = RFAntiJamtester(Channel,Pu)
             obj.Channel = Channel;
             obj.Pu = Pu;
+            obj.StateOccurSet = [];
         end
+        
         
         function state = boardToState( obj,MaxJam )
             PuState = obj.Pu.PuState;
@@ -40,7 +43,15 @@ classdef RFAntiJamtester < handle
            obj.restart(); 
            while step <= obj.TrainStepCnt
                state = obj.boardToState();
-               actionA = Com.chooseAction( obj.state );
+               if ~ismember(state.Index,obj.StateOccurSet)
+                    % the state has not occurred before
+                    ActionSetCom = Com.findAvaliableAction(state.value,obj.Channel.ChannelNum);
+                    ActionSetAttack = Attack.findAvaliableAction(state.value,obj.Channel.ChannelNum);
+                    actionA = Com.chooseAction( state , ActionSetCom , ActionSetAttack ,1);      
+                    obj.StateOccurSet = [ obj.StateOccurSet , state.Index ];
+               else
+                    actionA = Com.chooseAction( state , ActionSetCom , ActionSetAttack ,0);      
+               end
                actionB = Attacker.chooseAction( obj.state );
                obj.playRound( actionA,actionB );
                reward = obj.resultToReward( result );
