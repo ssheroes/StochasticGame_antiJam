@@ -71,6 +71,8 @@ classdef minimaxAntiJam < handle
                actionChosen = actionstrcut.action;              
         end
         
+        
+        
     end
 end
 

@@ -54,7 +54,7 @@ classdef RFAntiJamtester < handle
                end
                actionB = Attacker.chooseAction( obj.state );
                obj.playRound( actionA,actionB );
-               reward = obj.resultToReward( result );
+               reward = obj.resultToReward(actionA);
                newstate = obj.boradToState();
                Com.UpdatePolicy( state,newstate,[actionA,actionB],reward );
                Attacker.UpdatePolicy( state,newstate,[actionB,actionA],-reward );
@@ -74,8 +74,13 @@ classdef RFAntiJamtester < handle
             obj.Channel.GainVariate(PuState);
         end
         
-        function SenseResult = Sense(obj)
-            SenseResult = obj.Pu.bandState;
+        function reward = resultToReward(obj,actionA)
+            % calculate the block probability
+            if(isempty(obj.Channel.seq_Data_unJammed))
+                reward = 0;
+            else
+            reward = numel(obj.Channel.seq_Data_unJammed)*obj.Channel.Gain/sum(actionA);
+            end
         end
         
         

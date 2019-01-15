@@ -14,9 +14,8 @@ classdef Com < handle
 
     
     methods
-        function obj = Com()
-            
-            
+        function obj = Com(decay,expl,gamma)
+            Player = minimaxAntiJam(decay,expl,gamma);           
         end
         
         function ActionSet = findAvaliableAction(obj,state,ChannelNum)   %constructor

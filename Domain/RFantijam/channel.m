@@ -8,6 +8,8 @@ classdef channel < handle
         %jammed
         seq_Control_Jammed;
         seq_Data_Jammed;
+        seq_Control_unJammed;
+        seq_Data_unJammed;
         n_Jammed_C;
         n_Jammed_D;
         seq_unJammed;
@@ -36,6 +38,8 @@ classdef channel < handle
             obj.seq_Data_Jammed = [];
             obj.seq_Jammed = [];
             obj.seq_unJammed = 1:obj.channelNum;
+            obj.seq_Control_unJammed = [];
+            obj.seq_Data_unJammed = [];
             obj.GainIndex = randsrc(1,1,1:length(obj.GainSet));
             obj.Gain = obj.GainSet(obj.GainIndex);
         end
@@ -86,6 +90,9 @@ classdef channel < handle
             obj.seq_Control_Jammed = intersect(seq_Control,seq_Attacked);
             obj.seq_Data_Jammed = intersect(seq_Data,seq_Attacked);
             
+            obj.seq_Control_unJammed = setdiff(seq_Control,obj.seq_Control_Jammed);
+            obj.seq_Data_unJammed = setdiff(seq_Data,obj.seq_Data_Jammed);
+            
             obj.n_Jammed_C = numel(obj.seq_Control_Jammed);
             obj.n_Jammed_D = numel(obj.seq_Data_Jammed);
             
@@ -95,7 +102,6 @@ classdef channel < handle
             
         end
                     
-
         
         
         
