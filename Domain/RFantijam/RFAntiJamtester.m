@@ -45,19 +45,20 @@ classdef RFAntiJamtester < handle
                state = obj.boardToState();
                if ~ismember(state.Index,obj.StateOccurSet)
                     % the state has not occurred before
-                    ActionSetCom = Com.findAvaliableAction(state.value,obj.Channel.ChannelNum);
-                    ActionSetAttack = Attack.findAvaliableAction(state.value,obj.Channel.ChannelNum);
+                    ActionSetCom = Com.findAvaliableAction(state,obj.Channel.ChannelNum);
+                    ActionSetAttack = Attack.findAvaliableAction(state,obj.Channel.ChannelNum);
                     actionA = Com.chooseAction( state , ActionSetCom , ActionSetAttack ,1);      
+                    actionB = Attacker.chooseAction( state, ActionSetAttack,1 );
                     obj.StateOccurSet = [ obj.StateOccurSet , state.Index ];
                else
-                    actionA = Com.chooseAction( state , ActionSetCom , ActionSetAttack ,0);      
+                    actionA = Com.chooseAction( state , ActionSetCom , ActionSetAttack ,0);
+                    actionB = Attacker.chooseAction( state, ActionSetAttack,0 );
                end
-               actionB = Attacker.chooseAction( obj.state );
-               obj.playRound( actionA,actionB );
-               reward = obj.resultToReward(actionA);
+               obj.playRound( actionA.action,actionB.action );
+               reward = obj.resultToReward(actionA.action);
                newstate = obj.boradToState();
-               Com.UpdatePolicy( state,newstate,[actionA,actionB],reward );
-               Attacker.UpdatePolicy( state,newstate,[actionB,actionA],-reward );
+               Com.UpdatePolicy( state,newstate,[actionA.Index,actionB.Index],reward );
+               Attacker.UpdatePolicy( state,newstate,[actionB.Index,actionA.Index],-reward );
                step = step+1;
            end            
         end

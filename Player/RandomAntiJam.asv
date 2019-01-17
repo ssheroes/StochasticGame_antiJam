@@ -1,0 +1,39 @@
+classdef RandomAntiJam < handle
+    %RANDOMANTIJAM 此处显示有关此类的摘要
+    %   此处显示详细说明
+    
+    properties
+        Statelist;
+        StateIndexlist;
+        StateNumlisted;
+        ActionSetComlist;
+        ActionSetAttacklist;
+        StateNum;
+    end
+    
+    methods
+        
+        function actionChosen = chooseAction( obj, state , ActionSetCom, ActionSetAttack, flagNew )
+            stateIndex = state.Index;
+            if(flagNew)
+                obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
+                obj.Statelist{ obj.StateNum+1 } = state;
+                obj.ActionSetComlist{ obj.StateNum+1 } = ActionSetCom;
+                obj.ActionSetAttacklist{ obj.StateNum+1 } = ActionSetAttack;
+                stateIndexInlist = obj.StateNum+1;
+                action_num = length(obj.ActionSetComlist{obj.StateNum+1});
+                choice = randsrc(1,1,action_num);
+                obj.StateNum = obj.StateNum+1;
+            else
+                stateIndexInlist = find( obj.StateIndexlist==stateIndex,1 );               
+                    action_num = length(obj.ActionSetComlist{stateIndexInlist});
+                    choice = randsrc(1,1,action_num);
+            end
+            actionChosen = obj.ActionSetComlist{stateIndexInlist}(choice);
+        end
+
+        
+    end
+    
+end
+
