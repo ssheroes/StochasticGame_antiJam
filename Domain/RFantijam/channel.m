@@ -25,7 +25,7 @@ classdef channel < handle
         function obj = channel(bandNum,channelNum)
             obj.bandNum = bandNum;
             obj.channelNum = channelNum;
-            obj.GainSet = {1,6,11};
+            obj.GainSet = [1,6,11];
             obj.ProbTran = [0.4,0.4,0.2];
             obj.seq_whole = [1:channelNum];
             obj.Init();

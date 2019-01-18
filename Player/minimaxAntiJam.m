@@ -17,6 +17,7 @@ classdef minimaxAntiJam < handle
         ActionIndexSetAttack;
         ActionSetAttack;
         StateNum;
+        learning;
     end
     
     
@@ -35,32 +36,30 @@ classdef minimaxAntiJam < handle
             obj.ActionSetCom = cell(1,1);
             obj.ActionIndexSetAttack = cell(1,1);
             obj.ActionSetAttack = cell(1,1);
-            obj.StateNum = length(obj.Statelist);
+            obj.StateNum = 0;
+            obj.learning = 1;
+        end
+        
+        function Addstate( obj, state , ActionSetCom , ActionSetAttack)
+            stateIndex = state.Index;
+            [~,ActionComNum] = size( ActionSetCom{1} );
+            [~,ActionAttackNum] = size( ActionSetAttack{1} );
+            obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
+            obj.Statelist{ obj.StateNum+1 } = state;
+            obj.Q{ obj.StateNum+1 } = ones( ActionComNum , ActionAttackNum);
+            obj.V( obj.StateNum+1 ) = 1;
+            obj.Pi{ obj.StateNum+1 } = 1/ActionComNum*ones( ActionComNum,1 );
+            
+            obj.ActionIndexSetCom{ obj.StateNum+1 } = ActionSetCom{1};
+            obj.ActionIndexSetAttack{ obj.StateNum+1 } = ActionSetAttack{1};
+            obj.ActionSetCom{ obj.StateNum+1 } = ActionSetCom{2};
+            obj.ActionSetAttack{ obj.StateNum+1 } = ActionSetAttack{2};
+            obj.StateNum = obj.StateNum+1;
         end
         
         
-        
-        function actionChosen = chooseAction( obj, state , ActionSetCom, ActionSetAttack, flagNew ) 
-            stateIndex = state.Index;
-            if(flagNew)
-                ActionComNum = length( ActionSetCom{1} );
-                ActionAttackNum = length( ActionSetAttack{1} );
-                obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
-                obj.Statelist{ obj.StateNum+1 } = state;
-                obj.Q{ obj.StateNum+1 } = ones( ActionComNum , ActionAttackNum);
-                obj.V( obj.StateNum+1 ) = 1;
-                obj.Pi{ obj.StateNum+1 } = 1/ActionComNum*ones( ActionComNum,1 );
-                
-                obj.ActionIndexSetCom{ obj.StateNum+1 } = ActionSetCom{1};
-                obj.ActionIndexSetAttack{ obj.StateNum+1 } = ActionSetAttack{1};
-                obj.ActionSetCom{ obj.StateNum+1 } = ActionSetCom{2};
-                obj.ActionSetAttack{ obj.StateNum+1 } = ActionSetAttack{2};
-                
-                stateIndexInlist = obj.StateNum+1;
-                action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
-                choice = randsrc(1,1,action_num);    
-                obj.StateNum = obj.StateNum+1;
-            else       
+        function actionChosen = chooseAction( obj, state)   
+                stateIndex = state.Index;
                 stateIndexInlist = find( obj.StateIndexlist==stateIndex,1 );
                 if obj.learning && rand < obj.expl
                     action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
@@ -72,9 +71,8 @@ classdef minimaxAntiJam < handle
                     while RandChoice>sum(PiAction(1:choice))
                         choice = choice+1;
                     end
-                end               
-            end   
-               actionChosen.action = obj.ActionSetCom{stateIndexInlist}(:,choice);    
+                end                
+               actionChosen.action = transpose( obj.ActionSetCom{stateIndexInlist}(:,choice) );    
                actionChosen.Index = obj.ActionIndexSetCom{stateIndexInlist}(choice);
         end
         
@@ -84,8 +82,8 @@ classdef minimaxAntiJam < handle
            end
            actionA = actions(1);
            actionB = actions(2);         
-           CurStateIndex = CurState.state;
-           NextStateIndex = NextState.state;
+           CurStateIndex = CurState.Index;
+           NextStateIndex = NextState.Index;
            CurStateIndexInlist = find( obj.StateIndexlist==CurStateIndex,1 );
            NextStateIndexInlist = find( obj.StateIndexlist==NextStateIndex,1 );
            action_setA = obj.ActionIndexSetCom{CurStateIndexInlist};

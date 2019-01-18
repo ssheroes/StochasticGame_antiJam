@@ -4,7 +4,6 @@ classdef Com < handle
     properties
         SUnum;
         Player;   %the player policy
-        action;
         n_Data_1;
         n_Control_1;
         n_Data_2;
@@ -26,8 +25,9 @@ classdef Com < handle
             n_Jammed = n_Jammed_C+n_Jammed_D;
             n_unJammed = ChannelNum-n_Jammed;
             if PuState ==1
-                ActionSet{1} = [0;0;0;0];
-                ActionSet{2} = obj.actionToIndex(ActionSet.action,ChannelNum);
+                ActionSet{2} = [0;0;0;0];
+                ActionSet{1} = obj.actionToIndex( ActionSet{2},ChannelNum);
+                return;
             else
                 for n_data_1 = 0:n_unJammed
                     for n_control_1 = 0:n_unJammed-n_data_1
@@ -35,8 +35,8 @@ classdef Com < handle
                             for n_control_2 = 0:n_Jammed-n_data_2
                                 actionItem = [ n_data_1,n_control_1,n_data_2,n_control_2].';
                                 actionIndex = obj.actionToIndex(actionItem,ChannelNum);
-                                ActionSet{1} = [ActionSet{1},actionItem];
-                                ActionSet{2} = [ActionSet{2},actionIndex];
+                                ActionSet{1} = [ActionSet{1},actionIndex];
+                                ActionSet{2} = [ActionSet{2},actionItem];
                             end
                         end
                     end
@@ -50,28 +50,18 @@ classdef Com < handle
                +action(3)*ChannelNum+action(4)+1;          
         end
         
-        function Initial(obj)
-            % specialize the actions for each state
             
-            
-        end
-            
-        function actionChosen =chooseAction(obj,state,ActionSetCom,ActionSetAttack,flagNew)   %Output the action
-            PuState = state.value(1);
-            if(PuState==1)
-                action = zeros(1,numAction);
-                actionChosen.Index = obj.actionToIndex(action);
-                actionChosen.action = action;
-                return;
-            else
-                actionChosen = obj.Player.chooseAction(state,ActionSetCom,ActionSetAttack,flagNew);
-            end
+        function actionChosen =chooseAction(obj,state)   %Output the action
+            actionChosen = obj.Player.chooseAction(state);
             obj.n_Data_1 = actionChosen.action(1);
             obj.n_Control_1 = actionChosen.action(2);
             obj.n_Data_2 = actionChosen.action(3);
             obj.n_Control_2 = actionChosen.action(4);    
         end
         
+        function UpdatePolicy( obj , CurState , NextState , actions , reward)
+            obj.Player.UpdatePolicy(CurState , NextState , actions , reward);           
+        end
         
     
     end

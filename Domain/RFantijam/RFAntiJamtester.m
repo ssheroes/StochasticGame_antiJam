@@ -18,6 +18,7 @@ classdef RFAntiJamtester < handle
         
         function state = boardToState( obj,MaxJam )
             PuState = obj.Pu.PuState;
+            Channelgain = obj.Channel.Gain;
             GainIndex = obj.Channel.GainIndex;
             n_Jammed_C = obj.Channel.n_Jammed_C;
             n_Jammed_D = obj.Channel.n_Jammed_D;
@@ -38,25 +39,28 @@ classdef RFAntiJamtester < handle
            state.Index = weight1*weight2Max+weight2+1;         
         end
         
-        function wins = train(obj,Com,Attacker)
+        function Addstate( obj,Com,Attacker, state)
+           if ~ismember(state.Index,obj.StateOccurSet)
+            ActionSetCom = Com.findAvaliableAction(state,obj.Channel.channelNum);
+            ActionSetAttack = Attacker.findAvaliableAction(state,obj.Channel.channelNum);
+            Com.Player.Addstate( state , ActionSetCom , ActionSetAttack);
+            Attacker.Player.Addstate(state , ActionSetAttack , ActionSetCom);
+            obj.StateOccurSet = [ obj.StateOccurSet , state.Index ];
+           end
+        end
+        
+        function train(obj,Com,Attacker,TrainStepCnt)
            step = 0;
            obj.restart(); 
-           while step <= obj.TrainStepCnt
-               state = obj.boardToState();
-               if ~ismember(state.Index,obj.StateOccurSet)
-                    % the state has not occurred before
-                    ActionSetCom = Com.findAvaliableAction(state,obj.Channel.ChannelNum);
-                    ActionSetAttack = Attack.findAvaliableAction(state,obj.Channel.ChannelNum);
-                    actionA = Com.chooseAction( state , ActionSetCom , ActionSetAttack ,1);      
-                    actionB = Attacker.chooseAction( state, ActionSetAttack,1 );
-                    obj.StateOccurSet = [ obj.StateOccurSet , state.Index ];
-               else
-                    actionA = Com.chooseAction( state , ActionSetCom , ActionSetAttack ,0);
-                    actionB = Attacker.chooseAction( state, ActionSetAttack,0 );
-               end
+           while step <= TrainStepCnt
+               state = obj.boardToState(Attacker.JamMax);
+               obj.Addstate(Com,Attacker, state);
+               actionA = Com.chooseAction( state );
+               actionB = Attacker.chooseAction( state );
                obj.playRound( actionA.action,actionB.action );
                reward = obj.resultToReward(actionA.action);
-               newstate = obj.boradToState();
+               newstate = obj.boardToState(Attacker.JamMax);
+               obj.Addstate(Com,Attacker, newstate);
                Com.UpdatePolicy( state,newstate,[actionA.Index,actionB.Index],reward );
                Attacker.UpdatePolicy( state,newstate,[actionB.Index,actionA.Index],-reward );
                step = step+1;
@@ -77,17 +81,11 @@ classdef RFAntiJamtester < handle
         
         function reward = resultToReward(obj,actionA)
             % calculate the block probability
-            if(isempty(obj.Channel.seq_Data_unJammed))
+            if(isempty(obj.Channel.seq_Control_unJammed))
                 reward = 0;
             else
             reward = numel(obj.Channel.seq_Data_unJammed)*obj.Channel.Gain/sum(actionA);
             end
-        end
-        
-        
-        function reward = GetReward(obj)
-        % relative to state, SU action, Attack Action
-            
         end
         
     end

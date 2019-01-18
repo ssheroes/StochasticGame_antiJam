@@ -22,32 +22,28 @@ classdef RandomAntiJam < handle
             obj.ActionSetCom = cell(1,1);
             obj.ActionIndexSetAttack = cell(1,1);
             obj.ActionSetAttack = cell(1,1);
-            obj.StateNum = length(obj.Statelist);
+            obj.StateNum = 0;
+        end
+        
+        function Addstate( obj, state , ActionSetCom , ActionSetAttack)
+            stateIndex = state.Index;
+            obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
+            obj.Statelist{ obj.StateNum+1 } = state;           
+            obj.ActionIndexSetCom{ obj.StateNum+1 } = ActionSetCom{1};
+            obj.ActionIndexSetAttack{ obj.StateNum+1 } = ActionSetAttack{1};
+            obj.ActionSetCom{ obj.StateNum+1 } = ActionSetCom{2};
+            obj.ActionSetAttack{ obj.StateNum+1 } = ActionSetAttack{2};
+            obj.StateNum = obj.StateNum+1;
         end
         
         
-        function actionChosen = chooseAction( obj, state , ActionSetCom, ActionSetAttack, flagNew )
+        function actionChosen = chooseAction( obj, state)
             stateIndex = state.Index;
-            if(flagNew)
-                obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
-                obj.Statelist{ obj.StateNum+1 } = state;
-                
-                obj.ActionIndexSetCom{ obj.StateNum+1 } = ActionSetCom{1};
-                obj.ActionIndexSetAttack{ obj.StateNum+1 } = ActionSetAttack{1};
-                obj.ActionSetCom{ obj.StateNum+1 } = ActionSetCom{2};
-                obj.ActionSetAttack{ obj.StateNum+1 } = ActionSetAttack{2};
-                
-                stateIndexInlist = obj.StateNum+1;
-                action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
-                choice = randsrc(1,1,action_num);
-                obj.StateNum = obj.StateNum+1;
-            else
-                stateIndexInlist = find( obj.StateIndexlist==stateIndex,1 );
-                action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
-                choice = randsrc(1,1,action_num);
-            end
-               actionChosen.action = obj.ActionSetCom{stateIndexInlist}(:,choice);    
-               actionChosen.Index = obj.ActionIndexSetCom{stateIndexInlist}(choice);
+            stateIndexInlist = find( obj.StateIndexlist==stateIndex,1 );
+            action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
+            choice = randsrc(1,1,action_num);
+            actionChosen.action = transpose( obj.ActionSetCom{stateIndexInlist}(:,choice) );
+            actionChosen.Index = obj.ActionIndexSetCom{stateIndexInlist}(choice);
         end
 
         function UpdatePolicy(obj,CurState,NextState,actions,reward)
