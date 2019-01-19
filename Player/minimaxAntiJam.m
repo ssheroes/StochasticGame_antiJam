@@ -40,6 +40,8 @@ classdef minimaxAntiJam < handle
             obj.learning = 1;
         end
         
+        
+        
         function Addstate( obj, state , ActionSetCom , ActionSetAttack)
             stateIndex = state.Index;
             [~,ActionComNum] = size( ActionSetCom{1} );

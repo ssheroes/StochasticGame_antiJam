@@ -9,12 +9,18 @@ classdef Com < handle
         n_Data_2;
         n_Control_2;
         numAction = 4;
+        Pi_hist ;
+        State_hist = {};
+        HistNum = 0;
     end
 
     
     methods
         function obj = Com(decay,expl,gamma)
-            obj.Player = minimaxAntiJam(decay,expl,gamma);           
+            obj.Player = minimaxAntiJam(decay,expl,gamma);
+            obj.Pi_hist = {};
+            obj.State_hist = {};
+            obj.HistNum = 0;
         end
         
         function ActionSet = findAvaliableAction(obj,state,ChannelNum)   %constructor
@@ -63,6 +69,11 @@ classdef Com < handle
             obj.Player.UpdatePolicy(CurState , NextState , actions , reward);           
         end
         
+        function MemoryPi( obj , CurState )
+            obj.Pi_hist{obj.HistNum+1} = obj. ;
+            obj.State_hist{obj.HistNum+1} = ;
+            obj.HistNum = 0;
+        end
     
     end
     
