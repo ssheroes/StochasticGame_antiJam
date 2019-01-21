@@ -88,7 +88,15 @@ classdef Com < handle
                    StartStep = StartStep+1;
                end
             end
-            PolicySee = zeros(obj.Player.ActionSetCom)
+            ActionNum = length(obj.Player.ActionSetCom{stateIndexInlist});
+            PolicySee = zeros(ActionNum,StopStep);
+            for k = 1:StopStep
+                if k<=StartStep
+                    PolicySee(:,k)=1/ActionNum*ones(ActionNum,1);
+                else                  
+                    PolicySee(:,k) = obj.Pi_hist{k}{stateIndexInlist};
+                end
+            end
             
         end
         
