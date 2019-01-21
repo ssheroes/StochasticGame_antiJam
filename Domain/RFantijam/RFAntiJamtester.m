@@ -25,18 +25,17 @@ classdef RFAntiJamtester < handle
             state.value = [PuState,Channelgain,n_Jammed_C,n_Jammed_D];
              % weight1 is the index of the combination [PUoccupied,GainIndex]
             if PuState
-                  weight1 = 0; %  [1,0]
+                  count1 = 0; %  [1,0]
             else
-                  weight1 = GainIndex; % [0,1] [0,2] [0,3]
+                  count1 = GainIndex; % [0,1] [0,2] [0,3]
             end
            % weight2 is the index of the combination [n_Jammed_C,n_Jammed_D]
-           if  n_Jammed_C==0
-               weight2 = n_Jammed_D;
-           else
-               weight2 = sum(MaxJam+2-n_Jammed_C:MaxJam+1);
-           end           
-           weight2Max = sum(1:MaxJam+1);
-           state.Index = weight1*weight2Max+weight2+1;         
+         
+               weight1 = (MaxJam+1)*(MaxJam+1);
+               count2 = n_Jammed_C;
+               weight2 = (MaxJam+1);
+               count3 = n_Jammed_D;              
+           state.Index = count1*weight1+count2*weight2+count3+1;         
         end
         
         function Addstate( obj,Com,Attacker, state)
@@ -53,10 +52,17 @@ classdef RFAntiJamtester < handle
            step = 0;
            obj.restart(); 
            while step <= TrainStepCnt
+               if mod(step,TrainStepCnt/20)==0
+                   disp('------------------------------------');
+                   fprintf('%4f%%\n',step*100/TrainStepCnt);
+                   fprintf('第%d次step 已完成\n',step);
+                   disp(['当前时间',datestr(now)]);
+               end              
                state = obj.boardToState(Attacker.JamMax);
                obj.Addstate(Com,Attacker, state);
                actionA = Com.chooseAction( state );
                actionB = Attacker.chooseAction( state );
+                disp(step);
                obj.playRound( actionA.action,actionB.action );
                reward = obj.resultToReward(actionA.action);
                newstate = obj.boardToState(Attacker.JamMax);

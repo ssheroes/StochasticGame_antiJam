@@ -9,8 +9,10 @@ classdef Com < handle
         n_Data_2;
         n_Control_2;
         numAction = 4;
-        Pi_hist ;
+        Pi_hist = {} ;
         State_hist = {};
+        StateIndex_hist = {};
+        ActionSetCom_hist = {};
         HistNum = 0;
     end
 
@@ -18,9 +20,6 @@ classdef Com < handle
     methods
         function obj = Com(decay,expl,gamma)
             obj.Player = minimaxAntiJam(decay,expl,gamma);
-            obj.Pi_hist = {};
-            obj.State_hist = {};
-            obj.HistNum = 0;
         end
         
         function ActionSet = findAvaliableAction(obj,state,ChannelNum)   %constructor
@@ -66,15 +65,34 @@ classdef Com < handle
         end
         
         function UpdatePolicy( obj , CurState , NextState , actions , reward)
-            obj.Player.UpdatePolicy(CurState , NextState , actions , reward);           
+            obj.Player.UpdatePolicy(CurState , NextState , actions , reward); 
+            obj.Record();
         end
         
-        function MemoryPi( obj , CurState )
-            obj.Pi_hist{obj.HistNum+1} = obj. ;
-            obj.State_hist{obj.HistNum+1} = ;
-            obj.HistNum = 0;
+        function Record( obj )
+            obj.Pi_hist{obj.HistNum+1} = obj.Player.Pi ;
+            obj.StateIndex_hist{obj.HistNum+1} = obj.Player.StateIndexlist; 
+            obj.State_hist{obj.HistNum+1} = obj.Player.Statelist;
+            obj.ActionSetCom_hist{obj.HistNum+1} = obj.Player.ActionSetCom;
+            obj.HistNum = obj.HistNum+1;
         end
     
+        function PlotPolicy( obj ,state,StopStep)
+            stateIndex = state.Index;
+            stateIndexInlist = find( obj.Player.StateIndexlist==stateIndex,1 );
+            StartStep = 1;
+            while 1
+               if ismember(stateIndex,obj.StateIndex_hist{StartStep})
+                   break;
+               else
+                   StartStep = StartStep+1;
+               end
+            end
+            PolicySee = zeros(obj.Player.ActionSetCom)
+            
+        end
+        
+        
     end
     
 end
