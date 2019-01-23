@@ -64,7 +64,7 @@ classdef RFAntiJamtester < handle
            end
         end
         
-        function train(obj,Com,Attacker,TrainStepCnt)
+        function PolicySee = train(obj,Com,Attacker,TrainStepCnt)
            step = 0;
            obj.restart(); 
            JamMax = Attacker.JamMax;

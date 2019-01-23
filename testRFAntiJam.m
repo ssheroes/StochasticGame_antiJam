@@ -11,7 +11,7 @@ RandStream.setGlobalStream(s);
 
 numActions = 5;
 drawProbability = 0.01;
-StepCntTotal = 1000;
+StepCntTotal = 10000;
 decay = 10^(-2/StepCntTotal);
 expl = 0.2;
 gamma = 0.01;
@@ -28,6 +28,7 @@ playerB = RandomAntiJam();
 Attacker = Attacker(playerB,4);
 Com = Com(decay,expl,gamma);
 
-RFAntiJam.train(Com,Attacker,StepCntTotal);
-
+PolicySee = RFAntiJam.train(Com,Attacker,StepCntTotal);
+figure;
+plot(PolicySee(42,:));
 

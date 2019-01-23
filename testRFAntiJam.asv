@@ -28,6 +28,7 @@ playerB = RandomAntiJam();
 Attacker = Attacker(playerB,4);
 Com = Com(decay,expl,gamma);
 
-RFAntiJam.train(Com,Attacker,StepCntTotal);
-
+PolicySee = RFAntiJam.train(Com,Attacker,StepCntTotal);
+figure;
+plot(PolicySee(42,:));
 
