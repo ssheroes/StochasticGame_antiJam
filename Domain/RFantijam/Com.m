@@ -77,8 +77,7 @@ classdef Com < handle
             obj.HistNum = obj.HistNum+1;
         end
     
-        function PlotPolicy( obj ,state,StopStep)
-            stateIndex = state.Index;
+        function PolicySee = PlotPolicy( obj ,stateIndex,StopStep)
             stateIndexInlist = find( obj.Player.StateIndexlist==stateIndex,1 );
             StartStep = 1;
             while 1
@@ -91,13 +90,12 @@ classdef Com < handle
             ActionNum = length(obj.Player.ActionSetCom{stateIndexInlist});
             PolicySee = zeros(ActionNum,StopStep);
             for k = 1:StopStep
-                if k<=StartStep
+                if k<StartStep
                     PolicySee(:,k)=1/ActionNum*ones(ActionNum,1);
                 else                  
                     PolicySee(:,k) = obj.Pi_hist{k}{stateIndexInlist};
                 end
-            end
-            
+            end            
         end
         
         
