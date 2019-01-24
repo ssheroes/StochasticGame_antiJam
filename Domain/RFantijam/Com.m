@@ -78,24 +78,28 @@ classdef Com < handle
         end
     
         function PolicySee = PlotPolicy( obj ,stateIndex,StopStep)
-            stateIndexInlist = find( obj.Player.StateIndexlist==stateIndex,1 );
-            StartStep = 1;
-            while 1
-               if ismember(stateIndex,obj.StateIndex_hist{StartStep})
-                   break;
-               else
-                   StartStep = StartStep+1;
-               end
-            end
-            ActionNum = length(obj.Player.ActionSetCom{stateIndexInlist});
-            PolicySee = zeros(ActionNum,StopStep);
-            for k = 1:StopStep
-                if k<StartStep
-                    PolicySee(:,k)=1/ActionNum*ones(ActionNum,1);
-                else                  
-                    PolicySee(:,k) = obj.Pi_hist{k}{stateIndexInlist};
+            SeeNum = length(stateIndex);
+            PolicySee = cell(1,SeeNum);
+            for h = 1:SeeNum
+                stateIndexInlist = find( obj.Player.StateIndexlist==stateIndex(h),1 );
+                StartStep = 1;
+                while 1
+                    if ismember(stateIndex,obj.StateIndex_hist{StartStep})
+                        break;
+                    else
+                        StartStep = StartStep+1;
+                    end
                 end
-            end            
+                ActionNum = length(obj.Player.ActionSetCom{stateIndexInlist});
+                PolicySee{h} = zeros(ActionNum,StopStep);
+                for k = 1:StopStep
+                    if k<StartStep
+                        PolicySee{h}(:,k)=1/ActionNum*ones(ActionNum,1);
+                    else
+                        PolicySee{h}(:,k) = obj.Pi_hist{k}{stateIndexInlist};
+                    end
+                end
+            end
         end
         
         
