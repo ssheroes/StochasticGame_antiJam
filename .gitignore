@@ -11,3 +11,4 @@ Stochastic_antiJam/Domain/**/*.asv
 Domain/RFantijam/fortest.m
 Player/minimaxAntiJam.asv
 Player/minimaxAntiJam.asv
+*.asv
