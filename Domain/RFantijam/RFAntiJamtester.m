@@ -27,31 +27,35 @@ classdef RFAntiJamtester < handle
         end
         
         function stateIndex = stateToIndex(obj,stateValue,MaxJam)
-            PuState = stateValue(1);
-            Channelgain =  stateValue(2);
-            n_Jammed_C = stateValue(3);
-            n_Jammed_D = stateValue(4);
-            GainIndex = 0;
-            switch Channelgain
-                case 1
-                    GainIndex = 1;
-                case 6
-                    GainIndex  = 2;
-                case 11
-                    GainIndex = 3;
+            StateNum = size(stateValue,1);
+            stateIndex = zeros(1,StateNum);
+            for h = 1:StateNum
+                PuState = stateValue(h,1);
+                Channelgain =  stateValue(h,2);
+                n_Jammed_C = stateValue(h,3);
+                n_Jammed_D = stateValue(h,4);
+                GainIndex = 0;
+                switch Channelgain
+                    case 1
+                        GainIndex = 1;
+                    case 6
+                        GainIndex  = 2;
+                    case 11
+                        GainIndex = 3;
+                end
+                
+                if PuState
+                    count1 = 0; %  [1,0]
+                else
+                    count1 = GainIndex; % [0,1] [0,2] [0,3]
+                end
+                % weight2 is the index of the combination [n_Jammed_C,n_Jammed_D]
+                weight1 = (MaxJam+1)*(MaxJam+1);
+                count2 = n_Jammed_C;
+                weight2 = (MaxJam+1);
+                count3 = n_Jammed_D;
+                stateIndex(h) = count1*weight1+count2*weight2+count3+1;
             end
-            
-            if PuState
-                count1 = 0; %  [1,0]
-            else
-                count1 = GainIndex; % [0,1] [0,2] [0,3]
-            end
-            % weight2 is the index of the combination [n_Jammed_C,n_Jammed_D]            
-            weight1 = (MaxJam+1)*(MaxJam+1);
-            count2 = n_Jammed_C;
-            weight2 = (MaxJam+1);
-            count3 = n_Jammed_D;
-            stateIndex = count1*weight1+count2*weight2+count3+1;
         end
         
         function Addstate( obj,Com,Attacker, state)
@@ -64,7 +68,7 @@ classdef RFAntiJamtester < handle
            end
         end
         
-        function PolicySee = train(obj,Com,Attacker,TrainStepCnt)
+        function PolicySee = train(obj,Com,Attacker,TrainStepCnt,StateSee)
            step = 0;
            obj.restart(); 
            JamMax = Attacker.JamMax;
@@ -88,7 +92,7 @@ classdef RFAntiJamtester < handle
                Attacker.UpdatePolicy( state,newstate,[actionB.Index,actionA.Index],-reward );
                step = step+1;
            end
-           stateIndex_see = obj.stateToIndex([0,6,0,0],JamMax);
+           stateIndex_see = obj.stateToIndex(StateSee,JamMax);
            PolicySee = Com.PlotPolicy(stateIndex_see,TrainStepCnt);
         end
         
