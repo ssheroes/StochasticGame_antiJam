@@ -9,11 +9,6 @@ classdef Com < handle
         n_Data_2;
         n_Control_2;
         numAction = 4;
-        Pi_hist = {} ;
-        State_hist = {};
-        StateIndex_hist = {};
-        ActionSetCom_hist = {};
-        HistNum = 0;
     end
 
     
@@ -66,40 +61,7 @@ classdef Com < handle
         
         function UpdatePolicy( obj , CurState , NextState , actions , reward)
             obj.Player.UpdatePolicy(CurState , NextState , actions , reward); 
-            obj.Record();
-        end
-        
-        function Record( obj )
-            obj.Pi_hist{obj.HistNum+1} = obj.Player.Pi ;
-            obj.StateIndex_hist{obj.HistNum+1} = obj.Player.StateIndexlist; 
-            obj.State_hist{obj.HistNum+1} = obj.Player.Statelist;
-            obj.ActionSetCom_hist{obj.HistNum+1} = obj.Player.ActionSetCom;
-            obj.HistNum = obj.HistNum+1;
-        end
-    
-        function PolicySee = PlotPolicy( obj ,stateIndex,StopStep)
-            SeeNum = length(stateIndex);
-            PolicySee = cell(1,SeeNum);
-            for h = 1:SeeNum
-                stateIndexInlist = find( obj.Player.StateIndexlist==stateIndex(h),1 );
-                StartStep = 1;
-                while 1
-                    if ismember(stateIndex,obj.StateIndex_hist{StartStep})
-                        break;
-                    else
-                        StartStep = StartStep+1;
-                    end
-                end
-                ActionNum = length(obj.Player.ActionSetCom{stateIndexInlist});
-                PolicySee{h} = zeros(ActionNum,StopStep);
-                for k = 1:StopStep
-                    if k<StartStep
-                        PolicySee{h}(:,k)=1/ActionNum*ones(ActionNum,1);
-                    else
-                        PolicySee{h}(:,k) = obj.Pi_hist{k}{stateIndexInlist};
-                    end
-                end
-            end
+            obj.Player.Record();
         end
         
         

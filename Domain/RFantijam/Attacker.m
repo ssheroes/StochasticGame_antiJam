@@ -55,6 +55,7 @@ classdef Attacker < handle
         
         function UpdatePolicy( obj , CurState , NextState , actions , reward)
             obj.Player.UpdatePolicy(CurState , NextState , actions , reward);
+            obj.Player.Record();
         end
 
     end

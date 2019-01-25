@@ -80,7 +80,7 @@ classdef RandomAntiJam < handle
                      ActionNum = length(obj.ActionSetCom{stateIndexInlist});
                      PolicySee{h} = zeros(ActionNum,StopStep);
                      for k = 1:StopStep
-                         PolicySee{h}(:,k)=1/ActionNum*ones(ActionNum,1);
+PolicySee{h}(:,k)=1/ActionNum*ones(ActionNum,1);
                      end
                  end
              end

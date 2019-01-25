@@ -18,6 +18,11 @@ classdef minimaxAntiJam < handle
         ActionSetAttack;
         StateNum;
         learning;
+        Pi_hist ;
+        State_hist;
+        StateIndex_hist;
+        ActionSetCom_hist;
+        HistNum ;
     end
     
     
@@ -38,6 +43,11 @@ classdef minimaxAntiJam < handle
             obj.ActionSetAttack = cell(1,1);
             obj.StateNum = 0;
             obj.learning = 1;
+            obj.HistNum = 0;
+            obj.Pi_hist = cell(1,1) ;
+            obj.State_hist = cell(1,1);
+            obj.StateIndex_hist = cell(1,1);
+            obj.ActionSetCom_hist = cell(1,1);
         end
         
         
@@ -96,7 +106,7 @@ classdef minimaxAntiJam < handle
                (1-obj.alpha)*obj.Q{CurStateIndexInlist}(ActionIndexInlistA,ActionIndexInlistB)+...
                +obj.alpha*(reward + obj.gamma*obj.V(NextStateIndexInlist));
             obj.UpdateV(CurStateIndexInlist);
-           obj.alpha = obj.alpha*obj.decay;
+           obj.alpha = obj.alpha*obj.decay;         
         end
         
          function UpdateV( obj ,CurStateIndexInlist)
@@ -123,9 +133,44 @@ classdef minimaxAntiJam < handle
             cvx_end
             obj.V(CurStateIndexInlist) = x(1);
             obj.Pi{CurStateIndexInlist} = x(2:end);
-        end
+         end
         
+         function Record( obj )
+             obj.Pi_hist{obj.HistNum+1} = obj.Pi ;
+             obj.StateIndex_hist{obj.HistNum+1} = obj.StateIndexlist;
+             obj.State_hist{obj.HistNum+1} = obj.Statelist;
+             obj.ActionSetCom_hist{obj.HistNum+1} = obj.ActionSetCom;
+             obj.HistNum = obj.HistNum+1;
+         end
         
+         function PolicySee = TrackPolicy( obj ,stateIndex,StopStep)
+             SeeNum = length(stateIndex);
+             PolicySee = cell(1,SeeNum);
+             for h = 1:SeeNum
+                 stateIndexInlist = find( obj.StateIndexlist==stateIndex(h),1 );
+                 if isempty(stateIndexInlist)
+                     disp(['cannot find the state', num2str(stateIndex(h))]);
+                 else
+                     StartStep = 1;
+                     while 1
+                         if ismember(stateIndex(h),obj.StateIndex_hist{StartStep})
+                             break;
+                         else
+                             StartStep = StartStep+1;
+                         end
+                     end
+                     ActionNum = length(obj.ActionSetCom{stateIndexInlist});
+                     PolicySee{h} = zeros(ActionNum,StopStep);
+                     for k = 1:StopStep
+                         if k<StartStep
+                             PolicySee{h}(:,k)=1/ActionNum*ones(ActionNum,1);
+                         else
+                             PolicySee{h}(:,k) = obj.Pi_hist{k}{stateIndexInlist};
+                         end
+                     end
+                 end
+             end
+         end
         
     end
 end

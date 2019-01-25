@@ -23,12 +23,13 @@ gamma = 0.01;
 Channel = channel(1,8);
 Pu = Pu();
 RFAntiJam = RFAntiJamtester(Channel,Pu);
-
-playerB = RandomAntiJam();
+% playerB = RandomAntiJam();
+ playerB = minimaxAntiJam(decay,expl,gamma);
+% playerB = minimaxAntiJam(); 
 Attacker = Attacker(playerB,4);
 Com = Com(decay,expl,gamma);
 
-PolicySee = RFAntiJam.train(Com,Attacker,StepCntTotal);
-figure;
-plot(PolicySee(42,:));
+StateSee = [0,1,0,0;0,6,0,0;0,11,0,0];
+[PolicySeeCom,PolicySeeAttacker,stateIndex_see] = RFAntiJam.train(Com,Attacker,StepCntTotal,StateSee);
+
 

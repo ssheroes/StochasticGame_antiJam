@@ -68,7 +68,7 @@ classdef RFAntiJamtester < handle
            end
         end
         
-        function [PolicySee,stateIndex_see] = train(obj,Com,Attacker,TrainStepCnt,StateSee)
+        function [PolicySeeCom,PolicySeeAttacker,stateIndex_see] = train(obj,Com,Attacker,TrainStepCnt,StateSee)
            step = 0;
            obj.restart(); 
            JamMax = Attacker.JamMax;
@@ -93,8 +93,16 @@ classdef RFAntiJamtester < handle
                step = step+1;
            end
            stateIndex_see = obj.stateToIndex(StateSee,JamMax);
-           PolicySee = Com.PlotPolicy(stateIndex_see,TrainStepCnt);
+           PolicySeeCom = Com.Player.TrackPolicy(stateIndex_see,TrainStepCnt);
+           PolicySeeAttacker = Attacker.Player.TrackPolicy(stateIndex_see,TrainStepCnt);
         end
+        
+        function PlotPolicy( obj , PolicySee ,stateIndex_see )
+            StateNum = length(stateIndex_see);
+            
+            
+        end
+        
         
         function restart(obj)
             obj.Channel.Init();   
