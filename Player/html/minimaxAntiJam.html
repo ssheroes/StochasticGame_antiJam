@@ -1,0 +1,439 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>minimaxAntiJam</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-01-30"><meta name="DC.source" content="minimaxAntiJam.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">classdef</span> minimaxAntiJam &lt; handle
+    <span class="comment">%MINIMAXANTIJAM &#27492;&#22788;&#26174;&#31034;&#26377;&#20851;&#27492;&#31867;&#30340;&#25688;&#35201;</span>
+    <span class="comment">%   &#27492;&#22788;&#26174;&#31034;&#35814;&#32454;&#35828;&#26126;</span>
+
+    <span class="keyword">properties</span>
+        decay;
+        expl;
+        gamma;
+        alpha;
+        V;
+        Q;
+        Pi;
+        Statelist;
+        StateIndexlist;
+        ActionIndexSetCom;
+        ActionSetCom;
+        ActionIndexSetAttack;
+        ActionSetAttack;
+        StateNum;
+        learning;
+        Pi_hist ;
+        State_hist;
+        StateIndex_hist;
+        ActionSetCom_hist;
+        HistNum ;
+    <span class="keyword">end</span>
+
+
+    <span class="keyword">methods</span>
+        <span class="keyword">function</span> obj = minimaxAntiJam(decay,expl,gamma)
+            obj.decay = decay;
+            obj.expl = expl;
+            obj.gamma = gamma;
+            obj.alpha = 1;
+            obj.V = [];
+            obj.StateIndexlist = [];
+            obj.Q = cell(1,1);
+            obj.Pi = cell(1,1);
+            obj.Statelist = cell(1,1);
+            obj.ActionIndexSetCom = cell(1,1);
+            obj.ActionSetCom = cell(1,1);
+            obj.ActionIndexSetAttack = cell(1,1);
+            obj.ActionSetAttack = cell(1,1);
+            obj.StateNum = 0;
+            obj.learning = 1;
+            obj.HistNum = 0;
+            obj.Pi_hist = cell(1,1) ;
+            obj.State_hist = cell(1,1);
+            obj.StateIndex_hist = cell(1,1);
+            obj.ActionSetCom_hist = cell(1,1);
+        <span class="keyword">end</span>
+
+
+
+        <span class="keyword">function</span> Addstate( obj, state , ActionSetCom , ActionSetAttack)
+            stateIndex = state.Index;
+            [~,ActionComNum] = size( ActionSetCom{1} );
+            [~,ActionAttackNum] = size( ActionSetAttack{1} );
+            obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
+            obj.Statelist{ obj.StateNum+1 } = state;
+            obj.Q{ obj.StateNum+1 } = ones( ActionComNum , ActionAttackNum);
+            obj.V( obj.StateNum+1 ) = 1;
+            obj.Pi{ obj.StateNum+1 } = 1/ActionComNum*ones( ActionComNum,1 );
+
+            obj.ActionIndexSetCom{ obj.StateNum+1 } = ActionSetCom{1};
+            obj.ActionIndexSetAttack{ obj.StateNum+1 } = ActionSetAttack{1};
+            obj.ActionSetCom{ obj.StateNum+1 } = ActionSetCom{2};
+            obj.ActionSetAttack{ obj.StateNum+1 } = ActionSetAttack{2};
+            obj.StateNum = obj.StateNum+1;
+        <span class="keyword">end</span>
+
+
+        <span class="keyword">function</span> actionChosen = chooseAction( obj, state)
+                stateIndex = state.Index;
+                stateIndexInlist = find( obj.StateIndexlist==stateIndex,1 );
+                <span class="keyword">if</span> obj.learning &amp;&amp; rand &lt; obj.expl
+                    action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
+                    choice = randsrc(1,1,action_num);
+                <span class="keyword">else</span>
+                    RandChoice = rand;
+                    choice = 1;
+                    PiAction = obj.Pi{stateIndexInlist};
+                    <span class="keyword">while</span> RandChoice&gt;sum(PiAction(1:choice))
+                        choice = choice+1;
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+               actionChosen.action = transpose( obj.ActionSetCom{stateIndexInlist}(:,choice) );
+               actionChosen.Index = obj.ActionIndexSetCom{stateIndexInlist}(choice);
+        <span class="keyword">end</span>
+
+        <span class="keyword">function</span> UpdatePolicy( obj , CurState , NextState , actions , reward)
+           <span class="keyword">if</span> obj.learning == 0
+               <span class="keyword">return</span>;
+           <span class="keyword">end</span>
+           actionA = actions(1);
+           actionB = actions(2);
+           CurStateIndex = CurState.Index;
+           NextStateIndex = NextState.Index;
+           CurStateIndexInlist = find( obj.StateIndexlist==CurStateIndex,1 );
+           NextStateIndexInlist = find( obj.StateIndexlist==NextStateIndex,1 );
+           action_setA = obj.ActionIndexSetCom{CurStateIndexInlist};
+           action_setB = obj.ActionIndexSetAttack{CurStateIndexInlist};
+           ActionIndexInlistA = find( action_setA==actionA );
+           ActionIndexInlistB = find( action_setB == actionB);
+           obj.Q{CurStateIndexInlist}(ActionIndexInlistA,ActionIndexInlistB) = <span class="keyword">...</span>
+               (1-obj.alpha)*obj.Q{CurStateIndexInlist}(ActionIndexInlistA,ActionIndexInlistB)+<span class="keyword">...</span>
+               +obj.alpha*(reward + obj.gamma*obj.V(NextStateIndexInlist));
+            obj.UpdateV(CurStateIndexInlist);
+           obj.alpha = obj.alpha*obj.decay;
+        <span class="keyword">end</span>
+
+         <span class="keyword">function</span> UpdateV( obj ,CurStateIndexInlist)
+            <span class="comment">% using convex optimization to solve</span>
+            <span class="comment">%   minimize  c * x</span>
+            <span class="comment">%   s.t.   A_ub*x &lt;= b_ub</span>
+            <span class="comment">%          A_eq*x == b_eq</span>
+           numActionsA = length(obj.ActionIndexSetCom{CurStateIndexInlist});
+           numActionsB = length(obj.ActionIndexSetAttack{CurStateIndexInlist});
+
+            Q_t = transpose(obj.Q{CurStateIndexInlist});
+            c = [-1,zeros(1,numActionsA)];
+            n = numActionsA;
+            A_up = [ones(numActionsB,1),-Q_t;zeros(numActionsA,1),-eye(numActionsA)];
+            b_up = zeros(numActionsA+numActionsB,1);
+            A_eq = [0,ones(1,numActionsA)];
+            b_eq = 1;
+            cvx_begin <span class="string">quiet</span>
+            variables <span class="string">x(n+1)</span>
+            minimize <span class="string">c*x</span>
+            subject <span class="string">to</span>
+            A_up*x &lt;= b_up
+            A_eq*x == b_eq
+            cvx_end
+            obj.V(CurStateIndexInlist) = x(1);
+            obj.Pi{CurStateIndexInlist} = x(2:end);
+         <span class="keyword">end</span>
+
+         <span class="keyword">function</span> Record( obj )
+             obj.Pi_hist{obj.HistNum+1} = obj.Pi ;
+             obj.StateIndex_hist{obj.HistNum+1} = obj.StateIndexlist;
+             obj.State_hist{obj.HistNum+1} = obj.Statelist;
+             obj.ActionSetCom_hist{obj.HistNum+1} = obj.ActionSetCom;
+             obj.HistNum = obj.HistNum+1;
+         <span class="keyword">end</span>
+
+         <span class="keyword">function</span> PolicySee = TrackPolicy( obj ,stateIndex,StopStep)
+             SeeNum = length(stateIndex);
+             PolicySee = cell(1,SeeNum);
+             <span class="keyword">for</span> h = 1:SeeNum
+                 stateIndexInlist = find( obj.StateIndexlist==stateIndex(h),1 );
+                 <span class="keyword">if</span> isempty(stateIndexInlist)
+                     disp([<span class="string">'cannot find the state'</span>, num2str(stateIndex(h))]);
+                 <span class="keyword">else</span>
+                     StartStep = 1;
+                     <span class="keyword">while</span> 1
+                         <span class="keyword">if</span> ismember(stateIndex(h),obj.StateIndex_hist{StartStep})
+                             <span class="keyword">break</span>;
+                         <span class="keyword">else</span>
+                             StartStep = StartStep+1;
+                         <span class="keyword">end</span>
+                     <span class="keyword">end</span>
+                     ActionNum = length(obj.ActionSetCom{stateIndexInlist});
+                     PolicySee{h} = zeros(ActionNum,StopStep);
+                     <span class="keyword">for</span> k = 1:StopStep
+</pre><pre class="codeinput">                         <span class="keyword">if</span> k&lt;StartStep
+                             PolicySee{h}(:,k)=1/ActionNum*ones(ActionNum,1);
+                         <span class="keyword">else</span>
+                             PolicySee{h}(:,k) = obj.Pi_hist{k}{stateIndexInlist};
+                         <span class="keyword">end</span>
+</pre><p><img src="minimaxAntiJam_eq15682195134482745114.png" alt="$x^2+e^{\pi i}$"></p><pre class="codeinput">                     <span class="keyword">end</span>
+                 <span class="keyword">end</span>
+             <span class="keyword">end</span>
+         <span class="keyword">end</span>
+
+
+
+
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">&#36755;&#20837;&#21442;&#25968;&#30340;&#25968;&#30446;&#19981;&#36275;&#12290;
+
+&#20986;&#38169; minimaxAntiJam (line 31)
+            obj.decay = decay;
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+classdef minimaxAntiJam < handle
+    %MINIMAXANTIJAM 此处显示有关此类的摘要
+    %   此处显示详细说明
+    
+    properties
+        decay;
+        expl;
+        gamma;
+        alpha;
+        V;
+        Q;
+        Pi;
+        Statelist;
+        StateIndexlist;
+        ActionIndexSetCom;
+        ActionSetCom;
+        ActionIndexSetAttack;
+        ActionSetAttack;
+        StateNum;
+        learning;
+        Pi_hist ;
+        State_hist;
+        StateIndex_hist;
+        ActionSetCom_hist;
+        HistNum ;
+    end
+    
+    
+    methods
+        function obj = minimaxAntiJam(decay,expl,gamma)
+            obj.decay = decay;
+            obj.expl = expl;
+            obj.gamma = gamma;
+            obj.alpha = 1;
+            obj.V = [];
+            obj.StateIndexlist = [];
+            obj.Q = cell(1,1);
+            obj.Pi = cell(1,1);
+            obj.Statelist = cell(1,1);
+            obj.ActionIndexSetCom = cell(1,1);
+            obj.ActionSetCom = cell(1,1);
+            obj.ActionIndexSetAttack = cell(1,1);
+            obj.ActionSetAttack = cell(1,1);
+            obj.StateNum = 0;
+            obj.learning = 1;
+            obj.HistNum = 0;
+            obj.Pi_hist = cell(1,1) ;
+            obj.State_hist = cell(1,1);
+            obj.StateIndex_hist = cell(1,1);
+            obj.ActionSetCom_hist = cell(1,1);
+        end
+        
+        
+        
+        function Addstate( obj, state , ActionSetCom , ActionSetAttack)
+            stateIndex = state.Index;
+            [~,ActionComNum] = size( ActionSetCom{1} );
+            [~,ActionAttackNum] = size( ActionSetAttack{1} );
+            obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
+            obj.Statelist{ obj.StateNum+1 } = state;
+            obj.Q{ obj.StateNum+1 } = ones( ActionComNum , ActionAttackNum);
+            obj.V( obj.StateNum+1 ) = 1;
+            obj.Pi{ obj.StateNum+1 } = 1/ActionComNum*ones( ActionComNum,1 );
+            
+            obj.ActionIndexSetCom{ obj.StateNum+1 } = ActionSetCom{1};
+            obj.ActionIndexSetAttack{ obj.StateNum+1 } = ActionSetAttack{1};
+            obj.ActionSetCom{ obj.StateNum+1 } = ActionSetCom{2};
+            obj.ActionSetAttack{ obj.StateNum+1 } = ActionSetAttack{2};
+            obj.StateNum = obj.StateNum+1;
+        end
+        
+        
+        function actionChosen = chooseAction( obj, state)   
+                stateIndex = state.Index;
+                stateIndexInlist = find( obj.StateIndexlist==stateIndex,1 );
+                if obj.learning && rand < obj.expl
+                    action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
+                    choice = randsrc(1,1,action_num);
+                else
+                    RandChoice = rand;
+                    choice = 1;
+                    PiAction = obj.Pi{stateIndexInlist};
+                    while RandChoice>sum(PiAction(1:choice))
+                        choice = choice+1;
+                    end
+                end                
+               actionChosen.action = transpose( obj.ActionSetCom{stateIndexInlist}(:,choice) );    
+               actionChosen.Index = obj.ActionIndexSetCom{stateIndexInlist}(choice);
+        end
+        
+        function UpdatePolicy( obj , CurState , NextState , actions , reward)
+           if obj.learning == 0
+               return;
+           end
+           actionA = actions(1);
+           actionB = actions(2);         
+           CurStateIndex = CurState.Index;
+           NextStateIndex = NextState.Index;
+           CurStateIndexInlist = find( obj.StateIndexlist==CurStateIndex,1 );
+           NextStateIndexInlist = find( obj.StateIndexlist==NextStateIndex,1 );
+           action_setA = obj.ActionIndexSetCom{CurStateIndexInlist};
+           action_setB = obj.ActionIndexSetAttack{CurStateIndexInlist};
+           ActionIndexInlistA = find( action_setA==actionA );
+           ActionIndexInlistB = find( action_setB == actionB);
+           obj.Q{CurStateIndexInlist}(ActionIndexInlistA,ActionIndexInlistB) = ...
+               (1-obj.alpha)*obj.Q{CurStateIndexInlist}(ActionIndexInlistA,ActionIndexInlistB)+...
+               +obj.alpha*(reward + obj.gamma*obj.V(NextStateIndexInlist));
+            obj.UpdateV(CurStateIndexInlist);
+           obj.alpha = obj.alpha*obj.decay;         
+        end
+        
+         function UpdateV( obj ,CurStateIndexInlist)
+            % using convex optimization to solve
+            %   minimize  c * x
+            %   s.t.   A_ub*x <= b_ub
+            %          A_eq*x == b_eq
+           numActionsA = length(obj.ActionIndexSetCom{CurStateIndexInlist});
+           numActionsB = length(obj.ActionIndexSetAttack{CurStateIndexInlist});
+            
+            Q_t = transpose(obj.Q{CurStateIndexInlist});
+            c = [-1,zeros(1,numActionsA)];
+            n = numActionsA;
+            A_up = [ones(numActionsB,1),-Q_t;zeros(numActionsA,1),-eye(numActionsA)];
+            b_up = zeros(numActionsA+numActionsB,1);
+            A_eq = [0,ones(1,numActionsA)];
+            b_eq = 1;
+            cvx_begin quiet
+            variables x(n+1)
+            minimize c*x
+            subject to
+            A_up*x <= b_up
+            A_eq*x == b_eq
+            cvx_end
+            obj.V(CurStateIndexInlist) = x(1);
+            obj.Pi{CurStateIndexInlist} = x(2:end);
+         end
+        
+         function Record( obj )
+             obj.Pi_hist{obj.HistNum+1} = obj.Pi ;
+             obj.StateIndex_hist{obj.HistNum+1} = obj.StateIndexlist;
+             obj.State_hist{obj.HistNum+1} = obj.Statelist;
+             obj.ActionSetCom_hist{obj.HistNum+1} = obj.ActionSetCom;
+             obj.HistNum = obj.HistNum+1;
+         end
+        
+         function PolicySee = TrackPolicy( obj ,stateIndex,StopStep)
+             SeeNum = length(stateIndex);
+             PolicySee = cell(1,SeeNum);
+             for h = 1:SeeNum
+                 stateIndexInlist = find( obj.StateIndexlist==stateIndex(h),1 );
+                 if isempty(stateIndexInlist)
+                     disp(['cannot find the state', num2str(stateIndex(h))]);
+                 else
+                     StartStep = 1;
+                     while 1
+                         if ismember(stateIndex(h),obj.StateIndex_hist{StartStep})
+                             break;
+                         else
+                             StartStep = StartStep+1;
+                         end
+                     end
+                     ActionNum = length(obj.ActionSetCom{stateIndexInlist});
+                     PolicySee{h} = zeros(ActionNum,StopStep);
+                     for k = 1:StopStep
+                         if k<StartStep
+                             PolicySee{h}(:,k)=1/ActionNum*ones(ActionNum,1);
+                         else
+                             PolicySee{h}(:,k) = obj.Pi_hist{k}{stateIndexInlist};
+                         end
+                         
+                         %%
+                         % $x^2+e^{\pi i}$
+                     end
+                 end
+             end
+         end
+         
+         
+         
+        
+    end
+end
+
+
+##### SOURCE END #####
+--></body></html>
