@@ -4,14 +4,14 @@ close all;
 clc;
 addpath('Player/');
 addpath('Domain/RFantijam');
-s = RandStream('mt19937ar','seed',2);
-RandStream.setGlobalStream(s);
+% s = RandStream('mt19937ar','seed',2);
+% RandStream.setGlobalStream(s);
 % kk= randsrc(1,1,[1:5]);
 
 
 numActions = 5;
 drawProbability = 0.01;
-StepCntTotal = 30000;
+StepCntTotal = 2000;
 decay = 10^(-2/StepCntTotal);
 expl = 0.2;
 gamma = 0.01;
@@ -31,5 +31,15 @@ Com = Com(decay,expl,gamma);
 StateSee = [0,1,0,0;0,6,0,0;0,11,0,0;0,6,2,0];
 [PolicySeeCom,PolicySeeAttacker,stateIndex_see] = RFAntiJam.train(Com,Attacker,StepCntTotal,StateSee);
 
-% save policy
+% see the final result of Com Policy
+[StateNum,~] = size(StateSee);
+for k=1:StateNum
+    figure;
+    plot(PolicySeeCom{k}(:,StepCntTotal)); 
+    title(['Policy Com of state',num2str(StateSee(k,:))]);
+    figure;
+    plot(PolicySeeAttacker{k}(:,StepCntTotal));
+    title(['Policy Attacker of state',num2str(StateSee(k,:))]);
+end
+
 

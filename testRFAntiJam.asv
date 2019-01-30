@@ -28,8 +28,15 @@ playerB = minimaxAntiJam(decay,expl,gamma);
 Attacker = Attacker(playerB,4);
 Com = Com(decay,expl,gamma);
 
-StateSee = [0,6,2,0;0,6,0,2];
+StateSee = [0,1,0,0;0,6,0,0;0,11,0,0;0,6,2,0];
 [PolicySeeCom,PolicySeeAttacker,stateIndex_see] = RFAntiJam.train(Com,Attacker,StepCntTotal,StateSee);
 
-% save policy
+% see the final result of Com Policy
+[StateNum,~] = size(StateSee);
+for k=1:StateNum
+    figure;
+    plot(PolicySeeCom{k}(:,StepCntTotal)); 
+    title();
+end
+
 

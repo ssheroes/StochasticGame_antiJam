@@ -52,8 +52,9 @@ classdef minimaxAntiJam < handle
         
         
         
-        function Addstate( obj, state , ActionSetCom , ActionSetAttack)
-            stateIndex = state.Index;
+        function Addstate( obj, state , ActionSetCom , ActionSetAttack)      
+            stateIndex = state.Index;            
+            if ~ismember(stateIndex,obj.StateIndexlist)            
             [~,ActionComNum] = size( ActionSetCom{1} );
             [~,ActionAttackNum] = size( ActionSetAttack{1} );
             obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
@@ -66,7 +67,8 @@ classdef minimaxAntiJam < handle
             obj.ActionIndexSetAttack{ obj.StateNum+1 } = ActionSetAttack{1};
             obj.ActionSetCom{ obj.StateNum+1 } = ActionSetCom{2};
             obj.ActionSetAttack{ obj.StateNum+1 } = ActionSetAttack{2};
-            obj.StateNum = obj.StateNum+1;
+            obj.StateNum = obj.StateNum+1;           
+            end
         end
         
         
@@ -167,6 +169,7 @@ classdef minimaxAntiJam < handle
                          else
                              PolicySee{h}(:,k) = obj.Pi_hist{k}{stateIndexInlist};
                          end
+                       
                      end
                  end
              end

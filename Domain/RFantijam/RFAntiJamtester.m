@@ -5,14 +5,20 @@ classdef RFAntiJamtester < handle
     properties
         Channel;
         Pu;      
-        StateOccurSet;
+        StateOccurIndexSet;
+        StateOccurCnt;
+        StateOccurValueSet;
+        NumStateOccur;
     end
        
     methods
         function obj = RFAntiJamtester(Channel,Pu)
             obj.Channel = Channel;
             obj.Pu = Pu;
-            obj.StateOccurSet = [];
+            obj.StateOccurIndexSet = [];
+            obj.StateOccurCnt = [];
+            obj.StateOccurValueSet = {};
+            obj.NumStateOccur = 0;
         end
         
         
@@ -58,16 +64,28 @@ classdef RFAntiJamtester < handle
             end
         end
         
-        function Addstate( obj,Com,Attacker, state)
-           if ~ismember(state.Index,obj.StateOccurSet)
-            ActionSetCom = Com.findAvaliableAction(state,obj.Channel.channelNum);
-            ActionSetAttack = Attacker.findAvaliableAction(state,obj.Channel.channelNum);
-            Com.Player.Addstate( state , ActionSetCom , ActionSetAttack);
-            Attacker.Player.Addstate(state , ActionSetAttack , ActionSetCom);
-            obj.StateOccurSet = [ obj.StateOccurSet , state.Index ];
-           end
+        function Addstate( obj,Com,Attacker,state,ForUpdateOnly)
+            if ForUpdateOnly
+                ActionSetCom = Com.findAvaliableAction(state,obj.Channel.channelNum);
+                ActionSetAttack = Attacker.findAvaliableAction(state,obj.Channel.channelNum);
+                Com.Player.Addstate( state , ActionSetCom , ActionSetAttack);
+                Attacker.Player.Addstate(state , ActionSetAttack , ActionSetCom);
+            else
+                if ~ismember(state.Index,obj.StateOccurIndexSet)
+                    ActionSetCom = Com.findAvaliableAction(state,obj.Channel.channelNum);
+                    ActionSetAttack = Attacker.findAvaliableAction(state,obj.Channel.channelNum);
+                    Com.Player.Addstate( state , ActionSetCom , ActionSetAttack);
+                    Attacker.Player.Addstate(state , ActionSetAttack , ActionSetCom);
+                    obj.StateOccurIndexSet = [ obj.StateOccurIndexSet , state.Index ];
+                    obj.StateOccurValueSet{obj.NumStateOccur+1} = state;
+                    obj.NumStateOccur =  obj.NumStateOccur+1;
+                    obj.StateOccurCnt = [ obj.StateOccurCnt,1 ];
+                else
+                    pos = find( obj.StateOccurIndexSet == state.Index);
+                    obj.StateOccurCnt(pos) = obj.StateOccurCnt(pos)+1;
+                end                    
+            end  
         end
-        
         function [PolicySeeCom,PolicySeeAttacker,stateIndex_see] = train(obj,Com,Attacker,TrainStepCnt,StateSee)
            step = 0;
            obj.restart(StateSee(1,:)); 
@@ -80,14 +98,14 @@ classdef RFAntiJamtester < handle
                    disp(['当前时间',datestr(now)]);
                end              
                state = obj.boardToState(JamMax);
-               obj.Addstate(Com,Attacker, state);
+               obj.Addstate(Com,Attacker, state,0);
                actionA = Com.chooseAction( state );
                actionB = Attacker.chooseAction( state );
 %                 disp(step);
                obj.playRound( actionA.action,actionB.action );
                reward = obj.resultToReward(actionA.action);
                newstate = obj.boardToState(JamMax);
-               obj.Addstate(Com,Attacker, newstate);
+               obj.Addstate(Com,Attacker, newstate ,1);
                Com.UpdatePolicy( state,newstate,[actionA.Index,actionB.Index],reward );
                Attacker.UpdatePolicy( state,newstate,[actionB.Index,actionA.Index],-reward );
                step = step+1;

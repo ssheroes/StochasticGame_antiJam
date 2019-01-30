@@ -36,6 +36,7 @@ classdef RandomAntiJam < handle
         
         function Addstate( obj, state , ActionSetCom , ActionSetAttack)
             stateIndex = state.Index;
+            if ~ismember(stateIndex,obj.StateIndexlist)    
             [~,ActionComNum] = size( ActionSetCom{1} );
             obj.StateIndexlist( obj.StateNum+1 ) = stateIndex;
             obj.Statelist{ obj.StateNum+1 } = state;           
@@ -45,6 +46,7 @@ classdef RandomAntiJam < handle
             obj.ActionSetAttack{ obj.StateNum+1 } = ActionSetAttack{2};
             obj.Pi{ obj.StateNum+1 } = 1/ActionComNum*ones( ActionComNum,1 );
             obj.StateNum = obj.StateNum+1;
+            end
         end
         
         
