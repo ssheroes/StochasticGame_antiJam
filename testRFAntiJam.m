@@ -11,7 +11,7 @@ addpath('Domain/RFantijam');
 
 numActions = 5;
 drawProbability = 0.01;
-StepCntTotal = 2000;
+StepCntTotal = 10000;
 decay = 10^(-2/StepCntTotal);
 expl = 0.2;
 gamma = 0.01;
