@@ -70,7 +70,7 @@ classdef RFAntiJamtester < handle
         
         function [PolicySeeCom,PolicySeeAttacker,stateIndex_see] = train(obj,Com,Attacker,TrainStepCnt,StateSee)
            step = 0;
-           obj.restart(); 
+           obj.restart(StateSee(1,:)); 
            JamMax = Attacker.JamMax;
            while step <= TrainStepCnt
                if mod(step,TrainStepCnt/20)==0
@@ -83,7 +83,7 @@ classdef RFAntiJamtester < handle
                obj.Addstate(Com,Attacker, state);
                actionA = Com.chooseAction( state );
                actionB = Attacker.chooseAction( state );
-                disp(step);
+%                 disp(step);
                obj.playRound( actionA.action,actionB.action );
                reward = obj.resultToReward(actionA.action);
                newstate = obj.boardToState(JamMax);
@@ -98,22 +98,18 @@ classdef RFAntiJamtester < handle
         end
         
         function PlotPolicy( obj , PolicySee ,stateIndex_see )
-            StateNum = length(stateIndex_see);
-            
-            
+            StateNum = length(stateIndex_see);       
         end
         
         
-        function restart(obj)
-            obj.Channel.Init();   
-            obj.Pu.Init();
+        function restart(obj,InitState)
+            obj.Channel.Init(InitState);   
+            obj.Pu.Init(InitState);
         end
         
         function playRound( obj,actionA,actionB )
         % relative to state, SU action, Attack Action           
             obj.Channel.JamChannelEvolute(actionA,actionB);           
-            PuState = obj.Pu.StateVariate();
-            obj.Channel.GainVariate(PuState);
         end
         
         function reward = resultToReward(obj,actionA)
@@ -123,6 +119,8 @@ classdef RFAntiJamtester < handle
             else
             reward = numel(obj.Channel.seq_Data_unJammed)*obj.Channel.Gain/sum(actionA);
             end
+            PuState = obj.Pu.StateVariate();
+            obj.Channel.GainVariate(PuState);
         end
         
     end

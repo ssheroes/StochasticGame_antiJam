@@ -28,20 +28,32 @@ classdef channel < handle
             obj.GainSet = [1,6,11];
             obj.ProbTran = [0.4,0.4,0.2];
             obj.seq_whole = [1:channelNum];
-            obj.Init();
         end
         
-        function Init(obj)
-            obj.n_Jammed_C = 0;
-            obj.n_Jammed_D = 0;
-            obj.seq_Control_Jammed = [];
-            obj.seq_Data_Jammed = [];
-            obj.seq_Jammed = [];
-            obj.seq_unJammed = 1:obj.channelNum;
+        function Init(obj,InitState)
+            obj.n_Jammed_C = InitState(3);
+            obj.n_Jammed_D = InitState(4);
+            obj.seq_whole = 1:obj.channelNum;
+            obj.seq_Control_Jammed = obj.seq_whole(randperm(obj.channelNum,obj.n_Jammed_C));
+            seq_temp1 = setdiff(obj.seq_whole,obj.seq_Control_Jammed);
+            obj.seq_Data_Jammed = seq_temp1(randperm(numel(seq_temp1),obj.n_Jammed_D));
+            
+            obj.seq_Jammed = union(obj.seq_Control_Jammed,obj.seq_Data_Jammed);
+            obj.seq_unJammed = setdiff(obj.seq_whole,obj.seq_Jammed);
+            
             obj.seq_Control_unJammed = [];
             obj.seq_Data_unJammed = [];
-            obj.GainIndex = randsrc(1,1,1:length(obj.GainSet));
-            obj.Gain = obj.GainSet(obj.GainIndex);
+            
+            obj.Gain =InitState(2); 
+            switch obj.Gain
+                case 1
+                    obj.GainIndex = 1;
+                case 6
+                    obj.GainIndex  = 2;
+                case 11
+                    obj.GainIndex = 3;
+            end
+         
         end
         
         function GainVariate(obj,PuState)

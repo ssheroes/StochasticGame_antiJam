@@ -15,8 +15,8 @@ classdef Pu < handle
             obj.PuState = 0;
         end
         
-        function Init(obj)
-            obj.PuState = 0;
+        function Init(obj,InitState)
+            obj.PuState = InitState(1);
         end
         
         function PuStateOut = StateVariate(obj)
