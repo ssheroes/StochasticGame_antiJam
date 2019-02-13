@@ -9,6 +9,7 @@ classdef RFAntiJamtester < handle
         StateOccurCnt;
         StateOccurValueSet;
         NumStateOccur;
+        RewardHist;
     end
        
     methods
@@ -19,6 +20,7 @@ classdef RFAntiJamtester < handle
             obj.StateOccurCnt = [];
             obj.StateOccurValueSet = {};
             obj.NumStateOccur = 0;
+            obj.RewardHist = [];
         end
         
         
@@ -89,6 +91,7 @@ classdef RFAntiJamtester < handle
         function [PolicySeeCom,PolicySeeAttacker,stateIndex_see] = train(obj,Com,Attacker,TrainStepCnt,StateSee)
            step = 0;
            obj.restart(StateSee(1,:)); 
+           obj.RewardHist = zeros(1,TrainStepCnt);
            JamMax = Attacker.JamMax;
            while step <= TrainStepCnt
                if mod(step,TrainStepCnt/20)==0
@@ -104,6 +107,7 @@ classdef RFAntiJamtester < handle
 %                 disp(step);
                obj.playRound( actionA.action,actionB.action );
                reward = obj.resultToReward(actionA.action);
+               obj.RewardHist(step) = reward;
                newstate = obj.boardToState(JamMax);
                obj.Addstate(Com,Attacker, newstate ,1);
                Com.UpdatePolicy( state,newstate,[actionA.Index,actionB.Index],reward );
