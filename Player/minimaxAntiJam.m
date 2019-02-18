@@ -75,9 +75,10 @@ classdef minimaxAntiJam < handle
         function actionChosen = chooseAction( obj, state)   
                 stateIndex = state.Index;
                 stateIndexInlist = find( obj.StateIndexlist==stateIndex,1 );
+                
                 if obj.learning && rand < obj.expl
                     action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
-                    choice = randsrc(1,1,action_num);
+                    choice = randsrc(1,1,[1:action_num]);
                 else
                     RandChoice = rand;
                     choice = 1;
@@ -85,7 +86,7 @@ classdef minimaxAntiJam < handle
                     while RandChoice>sum(PiAction(1:choice))
                         choice = choice+1;
                     end
-                end                
+                end
                actionChosen.action = transpose( obj.ActionSetCom{stateIndexInlist}(:,choice) );    
                actionChosen.Index = obj.ActionIndexSetCom{stateIndexInlist}(choice);
         end

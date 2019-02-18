@@ -55,10 +55,10 @@ classdef RandomAntiJam < handle
             stateIndex = state.Index;
             stateIndexInlist = find( obj.StateIndexlist==stateIndex,1 );
             action_num = length(obj.ActionIndexSetCom{stateIndexInlist});
-            choice = randsrc(1,1,[1:action_num]);
-%             if(action_num==45&&choice~=45)
-%                 disp('find the choice is not 45');
-%             end
+            choice = randsrc(1,1,action_num);
+            if(action_num==45&&choice~=45)
+                disp('find the choice is not 45');
+            end
             actionChosen.action = transpose( obj.ActionSetCom{stateIndexInlist}(:,choice) );
             actionChosen.Index = obj.ActionIndexSetCom{stateIndexInlist}(choice);
         end

@@ -1,4 +1,4 @@
-classdef RFAntiJamtester < handle
+classdef RFAntiJamTrain< handle
     %RFENVIRONMENT 此处显示有关此类的摘要
     %   此处显示详细说明
     
@@ -13,7 +13,7 @@ classdef RFAntiJamtester < handle
     end
        
     methods
-        function obj = RFAntiJamtester(Channel,Pu)
+        function obj = RFAntiJamTrain(Channel,Pu)
             obj.Channel = Channel;
             obj.Pu = Pu;
             obj.StateOccurIndexSet = [];
@@ -107,7 +107,7 @@ classdef RFAntiJamtester < handle
 %                 disp(step);
                obj.playRound( actionA.action,actionB.action );
                reward = obj.resultToReward(actionA.action);
-               obj.RewardHist(step) = reward;
+               obj.RewardHist(step+1) = reward;
                newstate = obj.boardToState(JamMax);
                obj.Addstate(Com,Attacker, newstate ,1);
                Com.UpdatePolicy( state,newstate,[actionA.Index,actionB.Index],reward );
@@ -119,10 +119,20 @@ classdef RFAntiJamtester < handle
            PolicySeeAttacker = Attacker.Player.TrackPolicy(stateIndex_see,TrainStepCnt);
         end
         
-        function PlotPolicy( obj , PolicySee ,stateIndex_see )
-            StateNum = length(stateIndex_see);       
-        end
+  
         
+        function [ComSaved,AttackerSaved] = save(obj,Com,Attacker)
+            ComSaved = Com;
+            ComSaved.Player.Pi_hist=[] ;
+            ComSaved.Player.State_hist=[] ;
+            ComSaved.Player.StateIndex_hist=[];
+            ComSaved.Player.ActionSetCom_hist=[];
+            AttackerSaved = Attacker;
+            AttackerSaved.Player.Pi_hist=[] ;
+            AttackerSaved.Player.State_hist=[] ;
+            AttackerSaved.Player.StateIndex_hist=[];
+            AttackerSaved.Player.ActionSetCom_hist=[];
+        end
         
         function restart(obj,InitState)
             obj.Channel.Init(InitState);   
