@@ -11,7 +11,7 @@ addpath('Domain/RFantijam');
 
 numActions = 5;
 drawProbability = 0.01;
-StepCntTotal = 10000;
+StepCntTotal = 50000;
 decay = 10^(-2/StepCntTotal);
 expl = 0.2;
 gamma = 0.01;
@@ -45,16 +45,20 @@ RFAntiJamTest.refresh();
 testResult_RandVsMin = RFAntiJamTest.test(RandCom,AttackerMin,TestCnt);
 RFAntiJamTest.refresh();
 testResult_RandVsRand = RFAntiJamTest.test(RandCom,RandAttacker,TestCnt);
+RFAntiJamTest.refresh();
+testResult_MinVsRand = RFAntiJamTest.test(ComMin,RandAttacker,TestCnt);
 % see the final result of Com Policy
 
 AveMinVsMin = zeros(1,TestCnt);
 AveRandVsMin = zeros(1,TestCnt);
 AveRandVsRand = zeros(1,TestCnt);
+AveMinVsRand = zeros(1,TestCnt);
 
 for k = 1:TestCnt
   AveMinVsMin(k) = mean(testResult_MinVsMin(1:k));
   AveRandVsMin(k) = mean(testResult_RandVsMin(1:k));
   AveRandVsRand(k) = mean(testResult_RandVsRand(1:k));
+  AveMinVsRand(k) = mean(testResult_MinVsRand(1:k));
 end
 
 figure;
@@ -63,4 +67,7 @@ hold on;
 plot(AveRandVsMin);
 hold on;
 plot(AveRandVsRand);
-legend('MinVsMin','RandVsMin','RandVsRand');
+hold on;
+plot(AveMinVsRand);
+legend('MinVsMin','RandVsMin','RandVsRand','MinVsRand');
+PlotPolicy;
